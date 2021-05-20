@@ -202,6 +202,7 @@ datos.05.sinAMFM <- datos.05[,-c(7)]
 datos.05.sinAMFM.sinQ <- datos.05[,-c(1,7)]
 datos.05.sinAMFM.sinQ.sinPS <- datos.05[,-c(1,2,7)]
 
+
 numeroArboles <- 550
 numeroVecindades <- 2
 
@@ -298,9 +299,8 @@ print(iris.rf100)
 ############# MODELO DEFINITIVO
 #############
 
-numeroArboles <- 550
+numeroArboles <- 380
 numeroVecindades <- 2
-
 set.seed(324)
 modelo.definitivo <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(modelo.definitivo)
@@ -312,9 +312,13 @@ print(modelo.definitivo)
 
 
 
-
-
-
+datos.05.coNMAA.conNEXA.conDM <- datos.05[,-c(1,2,6,7)]
+numeroArboles <- 350
+numeroVecindades <- 2
+set.seed(324)
+modelo.definitivo <- randomForest(class ~ ., data=datos.05.coNMAA.conNEXA.conDM,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+print(modelo.definitivo)
+plot(modelo.definitivo)
 
 
 
@@ -323,9 +327,12 @@ modelo.analisis <- modelo.definitivo
 datos.analisis <- datos.05.sinAMFM.sinQ
 cantidad.var <- dim(datos.05.sinAMFM.sinQ)[2]
 
+
 ################################################################################
 ###########         INICIO ANALISIS Modelo definitivo
 ################################################################################
+
+print(modelo.analisis)
 
 #Error por arbol
 plot(modelo.analisis)
@@ -345,7 +352,7 @@ data.mds <- cmdscale(1 - modelo.analisis$proximity, eig=TRUE)
 #escalamiento clasico multidimencional (la que explicao el profe en catedra)
 op <- par(pty="s")
 pairs(cbind(datos.analisis[1:cantidad.var-1],data.mds$points),cex=0.5,gap=0,
-      col=c("red","green")[as.numeric(datos.analisis$class)],
+      col=c("red","blue")[as.numeric(datos.analisis$class)],
       main="Data: Predictos and MDS of Proximity Based on RandomForest")
 
 par(op)
@@ -394,6 +401,9 @@ plot(tsne$Y, t='n')
 text(tsne$Y, labels=df.final.numeric[,cantidad.var], col=cols[df.final.numeric[,cantidad.var] +1])
 
 
+
+
+
 metadata <- data.frame(sample_id = rownames(df.final.numeric),
                        colour = df.final.numeric$class)
 library(ggplot2)
@@ -408,9 +418,27 @@ ggplot(dadada, aes(x, y, colour = colour)) +
 ###########         FIN ANALISIS Modelo definitivo
 ################################################################################
 
+####Modelo con las 2 variables significativas
+datos.05.coNMAA.conNEXA <- datos.05[,-c(1,2,5,6,7)]
 
+numeroArboles <- 550
+numeroVecindades <- 2
+set.seed(324)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.coNMAA.conNEXA,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+print(iris.rf100)
+plot(iris.rf100)
 
+######
 
+datos.05.coNMAA.conNEXA.conDM <- datos.05[,-c(1,2,6,7)]
+numeroArboles <- 20000
+numeroVecindades <- 2
+set.seed(324)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.coNMAA.conNEXA.conDM,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+print(iris.rf100)
+plot(iris.rf100)
+
+####Graficos de 1000 - 1500 arboles
 
 
 
