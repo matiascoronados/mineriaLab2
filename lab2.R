@@ -8,8 +8,8 @@ library(dplyr)
 library(Rtsne)
 
 
-#url.data.set <- 'https://archive.ics.uci.edu/ml/machine-learning-databases/00329/messidor_features.arff'
-url.data.set <- "/Users/matiascoronado/Downloads/messidor_features.arff"
+url.data.set <- 'https://archive.ics.uci.edu/ml/machine-learning-databases/00329/messidor_features.arff'
+#url.data.set <- "/Users/matiascoronado/Downloads/messidor_features.arff"
 
 data.raw <- read.csv(url.data.set, header=FALSE, comment.char = "@")
 df <- data.frame(data.raw)
@@ -203,12 +203,11 @@ plot(iris.rf100)
 ###########         INICIO TESTEO DE MODELOS CON DIFERENTES VARIABLES 
 ################################################################################
 
-datos.05.sinQ <- datos.10[,-c(1)]
-datos.05.sinQ.sinPS <- datos.10[,-c(1,2)]
-datos.05.sinQ.sinPS.sinAMFM <- datos.10[,-c(1,2,7)]
-datos.05.sinQ.sinPS.sinAMFM.sinDD <- datos.10[,-c(1,2,5,7)]
-
-datos.05.sinQ.sinPS.sinAMFM.sinDD.sinDS <- datos.10[,-c(1,2,5,7)]
+datos.05.sinQ <- datos.05[,-c(1)]
+datos.05.sinQ.sinPS <- datos.05[,-c(1,2)]
+datos.05.sinQ.sinPS.sinAMFM <- datos.05[,-c(1,2,7)]
+datos.05.sinQ.sinPS.sinAMFM.sinDD <- datos.05[,-c(1,2,5,7)]
+datos.05.sinQ.sinPS.sinAMFM.sinDD.sinDS <- datos.05[,-c(1,2,5,7)]
 
 
 
@@ -307,47 +306,47 @@ auc(rf.roc)
 numeroArboles <- 500
 numeroVecindades <- 1
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 36.36
+# 37.4
 
 numeroArboles <- 1000
 numeroVecindades <- 1
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 35.83
+# 37.14
 
 numeroArboles <- 2000
 numeroVecindades <- 1
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 36.01
+# 37.05
 
 
 numeroArboles <- 5000
 numeroVecindades <- 1
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 35.4
+# 37.31
 
 
 numeroArboles <- 10000
 numeroVecindades <- 1
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 35.05
+# 36.88
 
 
 numeroArboles <- 20000
 numeroVecindades <- 1
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 35.14
+# 36.88
 
 ###############
 ###############
@@ -356,47 +355,47 @@ print(iris.rf100)
 numeroArboles <- 500
 numeroVecindades <- 2
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 34.09
+# 35.83
 
 numeroArboles <- 1000
 numeroVecindades <- 2
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 34.18
+# 35.75
 
 numeroArboles <- 2000
 numeroVecindades <- 2
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 34.26
+# 35.92
 
 
 numeroArboles <- 5000
 numeroVecindades <- 2
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 34.26
+# 36.62
 
 
 numeroArboles <- 10000
 numeroVecindades <- 2
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 34.0
+# 36.36
 
 
 numeroArboles <- 20000
 numeroVecindades <- 2
 set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.sinAMFM.sinQ,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
+iris.rf100 <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 print(iris.rf100)
-# 34.18
+# 36.62
 
 ################################################################################
 ###########         FIN TESTEO DE MODELOS, VARIANDO LA CANTIDAD DE ARBOLES Y VECINDADES
@@ -407,20 +406,36 @@ print(iris.rf100)
 
 
 
-datos.05.coNMAA.conNEXA.conDM <- datos.05[,-c(1,2,6,7)]
+
+
+
+
+############## modelo definitivo
+############## modelo definitivo
+############## modelo definitivo
+############## modelo definitivo
+############## modelo definitivo
+############## modelo definitivo
+
+
 numeroArboles <- 2500
-numeroVecindades <- 1
+numeroVecindades <- 2
 set.seed(324)
-modelo.definitivo <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
-print(modelo.definitivo)
-plot(modelo.definitivo)
+datos.05.sinQ.sinPS.sinAMFM.sinDD <- datos.05[,-c(1,2,5,7)]
+modelo.definitivo <- randomForest(class ~ ., data=datos.05.sinQ.sinPS.sinAMFM.sinDD,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
 
 
 
+############## modelo definitivo
+############## modelo definitivo
+############## modelo definitivo
+############## modelo definitivo
+############## modelo definitivo
+############## modelo definitivo
 
 modelo.analisis <- modelo.definitivo
-datos.analisis <- datos.05.sinQ.sinPS.sinAMFM
-cantidad.var <- dim(datos.05.sinQ.sinPS.sinAMFM)[2]
+datos.analisis <- datos.05.sinQ.sinPS.sinAMFM.sinDD
+cantidad.var <- dim(datos.05.sinQ.sinPS.sinAMFM.sinDD)[2]
 
 
 ################################################################################
@@ -512,33 +527,6 @@ ggplot(dadada, aes(x, y, colour = colour)) +
 ################################################################################
 ###########         FIN ANALISIS Modelo definitivo
 ################################################################################
-
-
-
-
-
-####Modelo con las 2 variables significativas
-datos.05.coNMAA.conNEXA <- datos.05[,-c(1,2,5,6,7)]
-
-numeroArboles <- 550
-numeroVecindades <- 2
-set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.coNMAA.conNEXA,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
-print(iris.rf100)
-plot(iris.rf100)
-
-######
-
-datos.05.coNMAA.conNEXA.conDM <- datos.05[,-c(1,2,6,7)]
-numeroArboles <- 20000
-numeroVecindades <- 2
-set.seed(324)
-iris.rf100 <- randomForest(class ~ ., data=datos.05.coNMAA.conNEXA.conDM,ntree= numeroArboles, mtry=numeroVecindades, importance=TRUE, proximity=TRUE)
-print(iris.rf100)
-plot(iris.rf100)
-
-####Graficos de 1000 - 1500 arboles
-
 
 
 
