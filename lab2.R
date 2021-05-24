@@ -1,16 +1,20 @@
 #install.packages("randomForest")
-require(randomForest)
-#install.packages("magrittr") # package installations are only needed the first time you use it
-#install.packages("dplyr")    # alternative installation of the %>%
-library(magrittr) # needs to be run every time you start R and want to use %>%
-library(dplyr)
+#install.packages("magrittr")
+#install.packages("dplyr") 
 #install.packages("Rtsne")
-library(Rtsne)
+#install.packages("MASS")
+#install.packages("pROC")
+#install.packages("ggplot2")
 
+require(randomForest)
+library(magrittr)
+library(dplyr)
+library(Rtsne)
+require(MASS)
+require(pROC)
+library(ggplot2)
 
 url.data.set <- 'https://archive.ics.uci.edu/ml/machine-learning-databases/00329/messidor_features.arff'
-#url.data.set <- "/Users/matiascoronado/Downloads/messidor_features.arff"
-
 data.raw <- read.csv(url.data.set, header=FALSE, comment.char = "@")
 df <- data.frame(data.raw)
 colnames(df) <- c(
@@ -38,14 +42,15 @@ colnames(df) <- c(
 
 
 ########### Se convierten en factor el valor binario de class.
-
 df.final <- df
-#Filtrando por q == 1
-df.final <- filter(df.final, q==1)
 df.final$class <- factor(df.final$class)
 df.final$q <- factor(df.final$q)
 df.final$ps <- factor(df.final$ps)
 df.final$amfm <- factor(df.final$amfm)
+
+
+#Se filtran los datos, para mantener los que son de buena calidad (q == 1)
+df.final <- filter(df.final, q==1)
 
 datos.05 <- df.final[,-c(4,5,6,7,8,10,11,12,13,14,15,16)]
 datos.06 <- df.final[,-c(3,5,6,7,8,9,11,12,13,14,15,16)]
@@ -55,84 +60,50 @@ datos.09 <- df.final[,-c(3,4,5,6,8,9,10,11,12,14,15,16)]
 datos.10 <- df.final[,-c(3,4,5,6,7,9,10,11,12,13,15,16)]
 df.final <- df.final
 
-#Equilibrio entre la varianza y el sesgo (que tan bien se ajusta el modelo a nuevas obversaciones)
-#Mientras mas grande el arbol, mayor es la varianza pero menor es el sesgo.
-#arbol GRANDE: Aumenta varianza; pero baja sesgo
-#arbol CHICO: alrevez
 
 ################################################################################
 ###########         INICIO ANALISIS Modelo A (con todas las variables)
 ################################################################################
-
 set.seed(71)
 modeloA <- randomForest(class ~ ., data=df.final, importance=TRUE, proximity=TRUE)
 print(modeloA)
 plot(modeloA)
 
-#Importancia: este nos permite aplicar el principio de parcimonia; regularizacion.; este nos permite ver que tanto afecta la variable en el proceso de clasificainon
-round(importance(modeloA),2)
-#MeanDecreaseAccuracy;  Que tanto incide que se encuentre o no la variable de clasificacion.
-#MeanCecreaseGini:      Tiene que ver con las impourezas de cada nodo al hacer las divicion de variables.
+#Importancia
 varImpPlot(modeloA)
-#Este grafico nos indica cuales caracteristicas aportan menos
-#Realizar 2 modelos:  Uno con todas las varialbes
-#                     Otro con las mas importantes
-#             Compara medidas de bondad y error
 
 #Proximidad
 data.mds <- cmdscale(1 - modeloA$proximity, eig=TRUE)
-#escalamiento clasico multidimencional (la que explicao el profe en catedra)
+#escalamiento clasico multidimencional
 op <- par(pty="s")
 pairs(cbind(df.final[1:19],data.mds$points),cex=0.5,gap=0,
       col=c("red","green")[as.numeric(df.final$class)],
       main="Data: Predictos and MDS of Proximity Based on RandomForest")
 
-
 par(op)
-print(data.mds$GOF)
 MDSplot(modeloA,df.final$class)
 
 #Coordenadas paralelas
-#install.packages("MASS")
-require(MASS)
-
-### OJO
-#No se pueden utilizar variables tipo factor: 0 - 1
 df.final.numeric <- df.final
-
 df.final.numeric$q <- as.numeric(df.final.numeric$q)
 df.final.numeric$ps <- as.numeric(df.final.numeric$ps)
 df.final.numeric$amfm <- as.numeric(df.final.numeric$amfm)
-
 parcoord(df.final.numeric[,1:19], var.label=TRUE,col=c("red","green")[as.numeric(df.final$class)])
-#legend("bottomright",legend=c("Presenta ","No"),fill=2:4)
 
 
-############################################# ROC
-#############################################
+# Calculo de ROC
 #Medidas de bonbadad de ajuste ROC
-#https://stats.stackexchange.com/questions/188616/how-can-we-calculate-roc-auc-for-classification-algorithm-such-as-random-forest
-require(pROC)
 rf.roc<-roc(df.final$class,modeloA$votes[,2])
 plot(rf.roc)
 auc(rf.roc)
 
-
-#############################################TSNE
-#############################################
-require(Rtsne)
-#No se pueden utilizar variables tipo factor: 0 - 1
+# Calculo de T-SNE
 df.final.numeric <- df.final
-
 df.final.numeric$q <- as.numeric(df.final.numeric$q)
 df.final.numeric$ps <- as.numeric(df.final.numeric$ps)
 df.final.numeric$amfm <- as.numeric(df.final.numeric$amfm)
 
 tsne <- Rtsne(as.matrix(df.final.numeric[,1:19]), check_duplicates = FALSE, pca = FALSE, perplexity=30, theta=0.5, dims=2)
-cols <- rainbow(10)
-plot(tsne$Y, t='n')
-text(tsne$Y, labels=df.final.numeric[,20], col=cols[df.final.numeric[,20] +1])
-
 
 metadata <- data.frame(sample_id = rownames(df.final.numeric),
                        colour = df.final.numeric$class)
@@ -192,11 +163,6 @@ plot(iris.rf100)
 ###########         FIN TESTEO DE MODELOS CON DIFERENTES ALPHAS
 ################################################################################
 
-#Por lo anterior, se utilizara alpha = 0.5
-
-
-
-
 
 
 ################################################################################
@@ -208,7 +174,6 @@ datos.05.sinQ.sinPS <- datos.05[,-c(1,2)]
 datos.05.sinQ.sinPS.sinAMFM <- datos.05[,-c(1,2,7)]
 datos.05.sinQ.sinPS.sinAMFM.sinDD <- datos.05[,-c(1,2,5,7)]
 datos.05.sinQ.sinPS.sinAMFM.sinDD.sinDS <- datos.05[,-c(1,2,5,7)]
-
 
 
 numeroArboles <- 1000
@@ -405,11 +370,6 @@ print(iris.rf100)
 
 
 
-
-
-
-
-
 ############## modelo definitivo
 ############## modelo definitivo
 ############## modelo definitivo
@@ -447,19 +407,11 @@ print(modelo.analisis)
 #Error por arbol
 plot(modelo.analisis)
 
-#Importancia: este nos permite aplicar el principio de parcimonia; regularizacion.; este nos permite ver que tanto afecta la variable en el proceso de clasificainon
-round(importance(modelo.analisis),2)
-#MeanDecreaseAccuracy;  Que tanto incide que se encuentre o no la variable de clasificacion.
-#MeanCecreaseGini:      Tiene que ver con las impourezas de cada nodo al hacer las divicion de variables.
+#Importancia
 varImpPlot(modelo.analisis)
-#Este grafico nos indica cuales caracteristicas aportan menos
-#Realizar 2 modelos:  Uno con todas las varialbes
-#                     Otro con las mas importantes
-#             Compara medidas de bondad y error
 
 #Proximidad
 data.mds <- cmdscale(1 - modelo.analisis$proximity, eig=TRUE)
-#escalamiento clasico multidimencional (la que explicao el profe en catedra)
 op <- par(pty="s")
 pairs(cbind(datos.analisis[1:cantidad.var-1],data.mds$points),cex=0.5,gap=0,
       col=c("red","blue")[as.numeric(datos.analisis$class)],
@@ -467,56 +419,33 @@ pairs(cbind(datos.analisis[1:cantidad.var-1],data.mds$points),cex=0.5,gap=0,
 
 par(op)
 print(data.mds$GOF)
-
-
 MDSplot(modelo.analisis,datos.analisis$class)
 
 #Coordenadas paralelas
-#install.packages("MASS")
-require(MASS)
-
-#No se pueden utilizar variables tipo factor: 0 - 1
 df.final.numeric <- datos.analisis
-
 df.final.numeric$q <- as.numeric(df.final.numeric$q)
 df.final.numeric$ps <- as.numeric(df.final.numeric$ps)
 df.final.numeric$amfm <- as.numeric(df.final.numeric$amfm)
-
 parcoord(df.final.numeric[,1:cantidad.var-1], var.label=TRUE,col=c("red","green")[as.numeric(df.final.numeric$class)])
-#legend("bottomright",legend=c("Presenta ","No"),fill=2:4)
 
 
-############################################# ROC
-#############################################
+# Calculo de ROC
 #Medidas de bonbadad de ajuste ROC
-#https://stats.stackexchange.com/questions/188616/how-can-we-calculate-roc-auc-for-classification-algorithm-such-as-random-forest
-require(pROC)
 rf.roc<-roc(datos.analisis$class,modelo.analisis$votes[,2])
 plot(rf.roc)
 auc(rf.roc)
 
 
-#############################################TSNE
-#############################################
-require(Rtsne)
-#No se pueden utilizar variables tipo factor: 0 - 1
+# Calculo de T-SNE
 df.final.numeric <- datos.analisis
 df.final.numeric$q <- as.numeric(df.final.numeric$q)
 df.final.numeric$ps <- as.numeric(df.final.numeric$ps)
 df.final.numeric$amfm <- as.numeric(df.final.numeric$amfm)
 
 tsne <- Rtsne(as.matrix(df.final.numeric[,1:cantidad.var-1]), check_duplicates = FALSE, pca = FALSE, perplexity=30, theta=0.5, dims=2)
-cols <- rainbow(10)
-plot(tsne$Y, t='n')
-text(tsne$Y, labels=df.final.numeric[,cantidad.var], col=cols[df.final.numeric[,cantidad.var] +1])
-
-
-
-
-
 metadata <- data.frame(sample_id = rownames(df.final.numeric),
                        colour = df.final.numeric$class)
-library(ggplot2)
+
 dadada <- data.frame(x = tsne$Y[,1],
                      y = tsne$Y[,2],
                      colour = metadata$colour)
